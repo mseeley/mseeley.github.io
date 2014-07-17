@@ -1,0 +1,167 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Font Viewer</title>
+  <style type="text/css">
+
+  @font-face {
+    font-family: Plex;
+    src: url("fonts/PlexFont-Regular.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: ArialUnicode;
+    src: url("fonts/arialuni.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: OpenSans;
+    src: url("fonts/opensans-regular-webfont.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  h1 {
+    margin-top:0;
+  }
+
+  ol {
+    list-style:none;
+    padding: 0;
+  }
+  li {
+    padding: 5px;
+    text-align:center;
+    display:inline-block;
+    width: 3em;
+  }
+
+  body {
+    height: 100%;
+    padding: 0em;
+  }
+
+  select {
+    position:absolute;
+    top:.5em;
+    width:30%;
+    padding: .5em;
+  }
+
+  select[multiple] {
+    height: 97%;
+    top:3em;
+  }
+
+  div {
+    left: 30%;
+    width:70%;
+    position:absolute;
+    height: 100%;
+    overflow:scroll;
+    padding: 1em;
+  }
+
+  </style>
+</head>
+
+<body>
+  <select id="fonts">
+    <option value="">Default</option>
+    <option value="serif">Generic serif</option>
+    <option value="sans-serif">Generic sans-serif</option>
+    <option value="Plex">@font-face: Plex</option>
+    <option value="ArialUnicode">@font-face: ArialUnicode</option>
+    <option value="OpenSans">@font-face: OpenSans</option>
+    <!-- <option value=""></option> -->
+  </select>
+  <select id="ranges" multiple="multiple"></select>
+  <div id="output">Choose font and ranges to begin</div>
+
+<script src="lib/UnicodeRange.js"></script>
+<script src="lib/UnicodeRanges.js"></script>
+<script>
+
+  function onfamilychange(e) {
+    output.style.fontFamily = e.target.value;
+  }
+
+  function onrangeschange(e) {
+    var selected = [].reduce.call(
+      e.target.options,
+      function (acc, option) {
+        if (option.selected) {
+          acc.push(option.value);
+        }
+        return acc;
+      },
+      []
+    );
+
+    render(selected);
+  }
+
+  function render(rangeNames) {
+    var frag = document.createDocumentFragment();
+    var titleTemplate = document.createElement('h1');
+    var listTemplate = document.createElement('ol');
+    var itemTemplate = document.createElement('li');
+
+    UnicodeRanges.
+      // No reduce() method yet...
+      find(function (range) {
+        return rangeNames.indexOf(range.name) > -1;
+      }).
+      forEach(function (range) {
+        var title = titleTemplate.cloneNode(false);
+        var list = listTemplate.cloneNode(false);
+
+        range.forEach(function (hex) {
+          var item = itemTemplate.cloneNode(false);
+          item.innerHTML = '&#x' + hex + '<br />' + hex;
+
+          list.appendChild(item);
+        });
+
+        title.innerHTML = range.name + ' (' + list.children.length + ')';
+        frag.appendChild(title);
+        frag.appendChild(list);
+      }
+    );
+
+    if (output.hasChildNodes()) {
+      output.parentNode.replaceChild(output.cloneNode(false), output);
+    }
+
+    output.appendChild(frag);
+  }
+
+  // Build the range select ----------------------------------------------------
+
+  var select = document.getElementById('ranges');
+
+  select.appendChild(
+    UnicodeRanges.reduce(function (frag, range) {
+      var option = document.createElement('option');
+      option.value = range.name;
+      option.text = range.name + ' (' + range.start + '-' + range.end + ')';
+      frag.appendChild(option);
+      return frag;
+    }, document.createDocumentFragment())
+  );
+
+  select.onchange = onrangeschange;
+  fonts.onchange = onfamilychange;
+
+</script>
+</body>
+</html>
