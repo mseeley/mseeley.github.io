@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>CSS3 unicode-range</title>
+  <meta charset="utf-8">
+  <style type="text/css">
+    @font-face {
+      font-family: NotoSans;
+      src: url("noto/NotoSans-Regular.ttf") format("truetype");
+    }
+    @font-face {
+      font-family: NotoSansJP;
+      src: url("noto/NotoSansJP-Regular.otf") format("opentype");
+      /*
+      Hiragana: 3040-3094
+      Katakana: 30A0-30FF
+      Katakana Phonetic Extensions: 31F0-31FF
+      */
+      unicode-range: U+3040-3094, U+30A0-30FF, U+31F0-31FF;
+    }
+    /*
+    @font-face {
+      font-family: NotoSansKR;
+      src: url("noto/NotoSans-KR-Regular.otf") format("opentype");
+    }
+    @font-face {
+      font-family: NotoSansHans;
+      src: url("noto/NotoSansHans-Regular.otf") format("opentype");
+    }
+    */
+  </style>
+  <style type="text/css">
+  body {
+    font-family: NotoSans, NotoSansJP, serif;
+  }
+  </style>
+</head>
+
+<body>
+
+  <p>Katakana: ゥ 30A5</p>
+  <p>Hiragana: ぅ 3045</p>
+
+</body>
+</html>
